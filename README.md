@@ -4,4 +4,4 @@
 
 ## The frontend is built with html, CSS, JS and Bootstrap
 
-## It is available to play at https://sarausama.github.io/connect4/
+## It is available to play at https://reverent-dijkstra-1a100f.netlify.app/
