@@ -7,6 +7,8 @@ let clientRooms = {};
 let clients = {};
 let state = {};
 
+var PORT = process.env.PORT || 3000;
+
 io.on("connection", (client) => {
   client.on("newGame", handleNewGame);
   client.on("joinGame", handleJoinGame);
@@ -175,6 +177,6 @@ io.on("connection", (client) => {
   }
 });
 
-http.listen(3000, () => {
+http.listen(PORT, () => {
   console.log("listening on *:3000");
 });
