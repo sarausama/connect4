@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4 Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        #gameScreen {
+            display: none;
+        }
+
+        #players {
+            display: none;
+        }
+
+        #finalScreen {
+            display: none;
+        }
+
+        .width-315 {
+            width: 315px;
+        }
+
+        .turn {
+            box-shadow:
+                0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                0 12.5px 10px rgba(0, 0, 0, 0.06),
+                0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+                0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+                0 100px 80px rgba(0, 0, 0, 0.12);
+            border: 2px solid green;
+            border-radius: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="vh-100 p-0">
+        <div class="container h-100 p-0">
+            <div id="initialScreen" class="h-100">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                    <h1>Connect 4</h1>
+                    <div class="card w-50">
+                        <input type="text" placeholder="Enter your name" id="nameInput" class="my-4 w-50 mx-auto" />
+                        <button type="submit" class="btn btn-success w-50 mx-auto my-2 " id="newGameButton">
+                            Create New Game
+                        </button>
+                        <h2 class="mx-auto">OR</h2>
+                        <input type="text" placeholder="Enter Game Code" id="gameCodeInput" class="w-50 mx-auto my-2" />
+                        <button type="submit" class="btn btn-success w-50 mx-auto my-2" id="joinGameButton">
+                            Join Game
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="gameScreen" class="h-100 p-0">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-0">
+                    <div class="row my-3" id="players">
+                        <div id="player1" class="col d-flex justify-content-start p-2 width-315">
+                            <img id="redChip" src="./pics/redChip.png" width="100" height="100" />
+                            <h3 class="my-auto mx-2"><span id="playerOneName">player 1</span></h3>
+                        </div>
+                        <div id="player2" class="col d-flex justify-content-end p-2 width-315">
+                            <h3 class="my-auto mx-2"> <span id="playerTwoName">player 2</span></h3>
+                            <img id="yellowChip" src="./pics/yellowChip.png" width="100" height="100" />
+                        </div>
+                    </div>
+                    <h1 id="helloMsg">Hello<span id="name"></span>!</h1>
+                    <h1 id="gameCode">Your game code is: <span id="gameCodeDisplay"></span></h1>
+                    <canvas id="canvas">
+                    </canvas>
+                </div>
+            </div>
+            <div class="modal fade" id="finalScreen" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-keyboard="false"
+                data-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h1 class="text-center" id="victory">You won!!</h1>
+                            <h1 class="text-center" id="defeat">You lost :(</h1>
+                            <h1 class="text-center" id="teammateDisconnected">Your opponent got disconneccted</h1>
+                            <h1 class="text-center" id="playAgainText">Your opponent wants to play again</h1>
+                            <div id="waiting" class="text-center">
+                                <h1 class="text-center" id="waiting">Waiting for your opponent to respond...</h1>
+                                <div class="spinner-grow text-muted"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="primary" class="btn btn-primary w-50 mx-auto my-2" id="playAgain">
+                                Play Again
+                            </button>
+                            <button type="primary" class="btn btn-secondary w-50 mx-auto my-2" id="goBackToMainScreen">
+                                Main Menu
+                            </button>
+                            <button type="primary" class="btn btn-primary w-50 mx-auto my-2" id="playAgainConfirmation">
+                                Sure!
+                            </button>
+                            <button type="primary" class="btn btn-secondary w-50 mx-auto my-2" id="playAgainDenial">
+                                No
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
