@@ -5,6 +5,7 @@ const finalScreen = document.getElementById("finalScreen");
 const victory = document.getElementById("victory");
 const defeat = document.getElementById("defeat");
 const waiting = document.getElementById("waiting");
+const tie = document.getElementById("tieText");
 
 const player1 = document.getElementById("player1");
 const player2 = document.getElementById("player2");
@@ -26,7 +27,7 @@ const playAgain = document.getElementById("playAgain");
 const goBackToMainScreen = document.getElementById("goBackToMainScreen");
 const playAgainConfirmation = document.getElementById("playAgainConfirmation");
 const playAgainDenial = document.getElementById("playAgainDenial");
-//TODO check for bugs
+
 //TODO Comment the code
 newGameBtn.addEventListener("click", newGame);
 joinGameBtn.addEventListener("click", joinGame);
@@ -35,7 +36,6 @@ playAgainConfirmation.addEventListener("click", playAgainConf);
 goBackToMainScreen.addEventListener("click", reset);
 playAgainDenial.addEventListener("click", reset);
 const socket = io("https://connect-4app.herokuapp.com/");
-
 socket.on("init", init);
 socket.on("gameCode", handleGameCode);
 socket.on("secondPlayerJoined", handleSecondPlayerJoined);
@@ -44,6 +44,7 @@ socket.on("tooManyPlayers", handleTooManyPlayers);
 socket.on("playerTurn", handlePlayerTurn);
 socket.on("victory", handleVictory);
 socket.on("defeat", handleDefeat);
+socket.on("tie", handleTie);
 socket.on("teammateDisconnected", handleTeammateDisconnected);
 socket.on("playAgainRequested", handlePlayAgainRequested);
 const BG_COLOUR = "#FFFAF0";
@@ -70,6 +71,8 @@ function init() {
   drawBoard();
   canvas.addEventListener("mousemove", mouseMove);
   canvas.addEventListener("mousedown", mouseDown);
+  canvas.addEventListener("touchmove", mouseMove);
+  canvas.addEventListener("touchend", mouseDown);
 }
 
 function drawBoard() {
@@ -93,13 +96,6 @@ function mouseMove(e) {
 function mouseDown(e) {
   if (current != null && host != null && current === host) {
     animateDown();
-    if (host) {
-      player2.classList.add("turn");
-      player1.classList.remove("turn");
-    } else {
-      player1.classList.add("turn");
-      player2.classList.remove("turn");
-    }
   }
 }
 
@@ -110,15 +106,16 @@ function newGame() {
     helloMsg.style.display = "block";
     players.style.display = "none";
   } else {
-    console.log("please enter your name");
+    alert("Please enter your name");
   }
 }
 
 function joinGame() {
-  const code = gameCodeInput.value;
+  console.log(typeof gameCodeInput.value);
+  const code = gameCodeInput.value.toUpperCase();
   nameInput.value
     ? socket.emit("joinGame", code, nameInput.value)
-    : console.log("Please enter your name");
+    : alert("Please enter your name");
 }
 
 function handleGameCode(gameCode) {
@@ -229,25 +226,17 @@ function animateDown() {
       70,
       70
     );
+    var audio = new Audio("https://www.w3schools.com/graphics/bounce.mp3");
+    audio.play();
     socket.emit("played", [target / 90, state.cols[target / 90]]);
+    if (host) {
+      player2.classList.add("turn");
+      player1.classList.remove("turn");
+    } else {
+      player1.classList.add("turn");
+      player2.classList.remove("turn");
+    }
   }
-}
-
-function handleVictory() {
-  $("#finalScreen").modal("show");
-  victory.style.display = "block";
-  defeat.style.display = "none";
-  waiting.style.display = "none";
-  teammateDisconnected.style.display = "none";
-  playAgainText.style.display = "none";
-
-  playAgain.style.display = "block";
-  playAgainDenial.style.display = "none";
-  playAgainConfirmation.style.display = "none";
-  goBackToMainScreen.style.display = "block";
-
-  gameStarted = false;
-  console.log("VICTORY!");
 }
 
 function handleDefeat(s) {
@@ -264,6 +253,7 @@ function handleDefeat(s) {
   );
   $("#finalScreen").modal("show");
   defeat.style.display = "block";
+  tie.style.display = "none";
   waiting.style.display = "none";
   victory.style.display = "none";
   teammateDisconnected.style.display = "none";
@@ -278,12 +268,59 @@ function handleDefeat(s) {
   console.log("you lost :(");
 }
 
+function handleVictory() {
+  $("#finalScreen").modal("show");
+  victory.style.display = "block";
+  defeat.style.display = "none";
+  tie.style.display = "none";
+  waiting.style.display = "none";
+  teammateDisconnected.style.display = "none";
+  playAgainText.style.display = "none";
+
+  playAgain.style.display = "block";
+  playAgainDenial.style.display = "none";
+  playAgainConfirmation.style.display = "none";
+  goBackToMainScreen.style.display = "block";
+
+  gameStarted = false;
+  console.log("VICTORY!");
+}
+
+function handleTie(s) {
+  let oldMove = new Image();
+  host
+    ? (oldMove.src = "./pics/yellowChip.png")
+    : (oldMove.src = "./pics/redChip.png");
+  ctx.drawImage(
+    oldMove,
+    15 + s.latestMove[0] * 90,
+    -3 + 80 * (6 - s.latestMove[1]),
+    70,
+    70
+  );
+  $("#finalScreen").modal("show");
+  defeat.style.display = "none";
+  tie.style.display = "block";
+  waiting.style.display = "none";
+  victory.style.display = "none";
+  teammateDisconnected.style.display = "none";
+  playAgainText.style.display = "none";
+
+  playAgain.style.display = "block";
+  playAgainDenial.style.display = "none";
+  playAgainConfirmation.style.display = "none";
+  goBackToMainScreen.style.display = "block";
+
+  gameStarted = false;
+}
+
 function handleTeammateDisconnected() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
   drawBoard();
   $("#finalScreen").modal("show");
   victory.style.display = "none";
   defeat.style.display = "none";
+  tie.style.display = "none";
   waiting.style.display = "none";
   playAgainText.style.display = "none";
   teammateDisconnected.style.display = "block";
@@ -308,6 +345,7 @@ function playAgainRequest() {
 
   victory.style.display = "none";
   defeat.style.display = "none";
+  tie.style.display = "none";
   waiting.style.display = "block";
   playAgainText.style.display = "none";
   teammateDisconnected.style.display = "none";
@@ -319,7 +357,9 @@ function playAgainRequest() {
 }
 
 function handlePlayAgainRequested() {
+  $("#finalScreen").modal("show");
   victory.style.display = "none";
+  tie.style.display = "none";
   defeat.style.display = "none";
   waiting.style.display = "none";
   playAgainText.style.display = "block";

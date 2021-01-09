@@ -1,6 +1,7 @@
 module.exports = {
   createGameState,
   didWin,
+  didTie,
 };
 
 function createGameState() {
@@ -31,6 +32,15 @@ function didWin(state) {
     return true;
   }
   return false;
+}
+
+function didTie(state) {
+  for (let i = 0; i < state.cols.length; ++i) {
+    if (state.cols[i] != 6) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function checkDown(state) {

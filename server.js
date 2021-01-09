@@ -2,7 +2,7 @@ var app = require("express")();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
 const { makeid } = require("./utils");
-const { createGameState, didWin } = require("./game");
+const { createGameState, didWin, didTie } = require("./game");
 let clientRooms = {};
 let clients = {};
 let state = {};
@@ -115,6 +115,15 @@ io.on("connection", (client) => {
       io.to(
         clients[roomName].players[state[roomName].turn === 0 ? 1 : 0].id
       ).emit("victory");
+      delete state[roomName];
+    } else if (didTie(state[roomName])) {
+      io.to(clients[roomName].players[state[roomName].turn].id).emit(
+        "tie",
+        state[roomName]
+      );
+      io.to(
+        clients[roomName].players[state[roomName].turn === 0 ? 1 : 0].id
+      ).emit("tie", state[roomName]);
       delete state[roomName];
     } else {
       io.to(clients[roomName].players[state[roomName].turn].id).emit(
