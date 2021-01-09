@@ -34,7 +34,7 @@ playAgain.addEventListener("click", playAgainRequest);
 playAgainConfirmation.addEventListener("click", playAgainConf);
 goBackToMainScreen.addEventListener("click", reset);
 playAgainDenial.addEventListener("click", reset);
-const socket = io();
+const socket = io("https://connect-4app.herokuapp.com/");
 
 socket.on("init", init);
 socket.on("gameCode", handleGameCode);
