@@ -76,7 +76,7 @@ function drawBoard() {
   ctx.fillStyle = BG_COLOUR;
   ctx.fillRect(0, 70, canvas.width, canvas.height - 70);
   base_image = new Image();
-  base_image.src = "pics/connect4Board.png";
+  base_image.src = "pics/Connect4Board.png";
   base_image.onload = function () {
     ctx.drawImage(base_image, 0, 71);
   };
