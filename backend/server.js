@@ -18,8 +18,10 @@ io.on("connection", (client) => {
   client.on("playAgainConf", handlePlayAgainConfirmation);
   client.on("reset", reset);
 
+  //function that gets called when the client joins a game
   function handleJoinGame(roomName, name) {
     let numClients;
+    //gets the number of players in that room
     clients[roomName]
       ? (numClients = clients[roomName].players.length)
       : (numClients = 0);
@@ -36,12 +38,16 @@ io.on("connection", (client) => {
       name: name,
       host: false,
     };
+
+    //contacts the host and lets them know that their opponent has joined the game
     io.to(clients[roomName].players[0].id).emit(
       "secondPlayerJoined",
       secondPlayer
     );
     clients[roomName].players.push(secondPlayer);
     clientRooms[client.id] = roomName;
+
+    //contacts the client and lets them into the room
     client.emit("gameCode", roomName);
     client.join(roomName);
     client.emit("init");
@@ -49,7 +55,10 @@ io.on("connection", (client) => {
       "secondPlayerJoined",
       clients[roomName].players[0]
     );
+    //creates the state of the room
     state[roomName] = createGameState();
+
+    //contacts the host and let them know that it's their turn
     io.to(clients[roomName].players[0].id).emit(
       "playerTurn",
       clients[roomName].players[0].host,
@@ -57,6 +66,7 @@ io.on("connection", (client) => {
     );
   }
 
+  //function that gets called when the client creates a room
   function handleNewGame(name) {
     let roomName = makeid(5);
     clientRooms[client.id] = roomName;
@@ -75,6 +85,7 @@ io.on("connection", (client) => {
     client.emit("init");
   }
 
+  //function that gets called when the player gets disconnected
   function handleDisconnect() {
     console.log("player with id " + client.id + " got disconnected");
     let roomCode = clientRooms[client.id];
@@ -99,6 +110,7 @@ io.on("connection", (client) => {
     delete clientRooms[client.id];
   }
 
+  //function that gets called when the client plays a move
   function handleSwitchTurn(latestMove) {
     let roomName = clientRooms[client.id];
     state[roomName].latestMove = latestMove;
@@ -134,6 +146,7 @@ io.on("connection", (client) => {
     }
   }
 
+  //function that gets called when the client requests to play again
   function handlePlayAgainRequest(host) {
     let roomName = clientRooms[client.id];
     let num;
@@ -141,6 +154,7 @@ io.on("connection", (client) => {
     io.to(clients[roomName].players[num].id).emit("playAgainRequested");
   }
 
+  //functtion that gets called when the client confirms that they want to play again
   function handlePlayAgainConfirmation() {
     let roomName = clientRooms[client.id];
     io.to(clients[roomName].players[0].id).emit(
@@ -161,6 +175,7 @@ io.on("connection", (client) => {
     );
   }
 
+  //function that gets called when the client returns to the main screen
   function reset() {
     let roomName = clientRooms[client.id];
     if (clients[roomName].players.length === 2) {

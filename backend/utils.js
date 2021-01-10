@@ -2,6 +2,7 @@ module.exports = {
   makeid,
 };
 
+//function that makes random room codes
 function makeid(length) {
   var result = "";
   var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

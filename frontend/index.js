@@ -1,40 +1,50 @@
+//Getting all the html components we need
+
+//different screens
 const initialScreen = document.getElementById("initialScreen");
 const gameScreen = document.getElementById("gameScreen");
 const finalScreen = document.getElementById("finalScreen");
 
+//different modal text
 const victory = document.getElementById("victory");
 const defeat = document.getElementById("defeat");
 const waiting = document.getElementById("waiting");
 const tie = document.getElementById("tieText");
+const teammateDisconnected = document.getElementById("teammateDisconnected");
+const playAgainText = document.getElementById("playAgainText");
 
+//components regarding the 2 players
 const player1 = document.getElementById("player1");
 const player2 = document.getElementById("player2");
-const teammateDisconnected = document.getElementById("teammateDisconnected");
+const players = document.getElementById("players");
+const playerOneName = document.getElementById("playerOneName");
+const playerTwoName = document.getElementById("playerTwoName");
+
+//buttons
 const newGameBtn = document.getElementById("newGameButton");
 const joinGameBtn = document.getElementById("joinGameButton");
+const playAgain = document.getElementById("playAgain");
+const goBackToMainScreen = document.getElementById("goBackToMainScreen");
+const playAgainConfirmation = document.getElementById("playAgainConfirmation");
+const playAgainDenial = document.getElementById("playAgainDenial");
+
+//components related to the name and code
 const gameCodeInput = document.getElementById("gameCodeInput");
 const helloMsg = document.getElementById("helloMsg");
 const gameCode = document.getElementById("gameCode");
 const nameInput = document.getElementById("nameInput");
 const name = document.getElementById("name");
 const gameCodeDisplay = document.getElementById("gameCodeDisplay");
-const players = document.getElementById("players");
-const playerOneName = document.getElementById("playerOneName");
-const playerTwoName = document.getElementById("playerTwoName");
-const playAgainText = document.getElementById("playAgainText");
 
-const playAgain = document.getElementById("playAgain");
-const goBackToMainScreen = document.getElementById("goBackToMainScreen");
-const playAgainConfirmation = document.getElementById("playAgainConfirmation");
-const playAgainDenial = document.getElementById("playAgainDenial");
-
-//TODO Comment the code
+//listening to different buttons
 newGameBtn.addEventListener("click", newGame);
 joinGameBtn.addEventListener("click", joinGame);
 playAgain.addEventListener("click", playAgainRequest);
 playAgainConfirmation.addEventListener("click", playAgainConf);
 goBackToMainScreen.addEventListener("click", reset);
 playAgainDenial.addEventListener("click", reset);
+
+//connecting the server
 const socket = io("https://connect-4app.herokuapp.com/");
 socket.on("init", init);
 socket.on("gameCode", handleGameCode);
@@ -59,6 +69,7 @@ let down = false;
 let state = {};
 let gameStarted = false;
 
+//function that gets called when the player enters a game room
 function init() {
   initialScreen.style.display = "none";
   gameScreen.style.display = "block";
@@ -75,6 +86,7 @@ function init() {
   canvas.addEventListener("touchend", mouseDown);
 }
 
+//function that draws the board
 function drawBoard() {
   ctx.fillStyle = BG_COLOUR;
   ctx.fillRect(0, 70, canvas.width, canvas.height - 70);
@@ -85,6 +97,7 @@ function drawBoard() {
   };
 }
 
+//function that gets called when the player moves the mouse
 function mouseMove(e) {
   var rect = canvas.getBoundingClientRect();
 
@@ -93,12 +106,14 @@ function mouseMove(e) {
   }
 }
 
+//function that gets called when the player clicks the mouse
 function mouseDown(e) {
   if (current != null && host != null && current === host) {
     animateDown();
   }
 }
 
+//function that gets called when a player tries to create a room
 function newGame() {
   if (nameInput.value) {
     socket.emit("newGame", nameInput.value);
@@ -110,6 +125,7 @@ function newGame() {
   }
 }
 
+//function that gets called when a player tries to join a room
 function joinGame() {
   console.log(typeof gameCodeInput.value);
   const code = gameCodeInput.value.toUpperCase();
@@ -118,10 +134,12 @@ function joinGame() {
     : alert("Please enter your name");
 }
 
+//function that gets called when a player creates a room and it shows the roomCode to the host
 function handleGameCode(gameCode) {
   gameCodeDisplay.innerText = gameCode;
 }
 
+//function that gets called when a player enters a wrong gameCode
 function handleUnknownCode() {
   gameCodeInput.value = "";
   initialScreen.style.display = "block";
@@ -129,6 +147,7 @@ function handleUnknownCode() {
   alert("Unknown Game Code");
 }
 
+//function that gets called when someone tries to join a full room
 function handleTooManyPlayers() {
   gameCodeInput.value = "";
   initialScreen.style.display = "block";
@@ -136,6 +155,8 @@ function handleTooManyPlayers() {
   alert("This game is already in progress");
 }
 
+//resets all the parameters when a game ends
+//(whether they decide to play again or go back to main screen)
 function reset() {
   gameCodeInput.value = "";
   initialScreen.style.display = "block";
@@ -152,6 +173,7 @@ function reset() {
   $("#finalScreen").modal("hide");
 }
 
+//function that gets called when the second player joins the room
 function handleSecondPlayerJoined(opponent) {
   gameCode.style.display = "none";
   helloMsg.style.display = "none";
@@ -169,6 +191,7 @@ function handleSecondPlayerJoined(opponent) {
   $("#finalScreen").modal("hide");
 }
 
+//function that gets called when it's the player's turn
 function handlePlayerTurn(hostPlayer, s) {
   current = hostPlayer;
   down = false;
@@ -201,6 +224,7 @@ function handlePlayerTurn(hostPlayer, s) {
   state = s;
 }
 
+//function that animates the chip to move horizontally
 function animate() {
   ctx.clearRect(0, 0, canvas.width, 70); // clear canvas
   !down && gameStarted ? ctx.drawImage(img, 15 + x, 0, 70, 70) : null; // draw image at current position
@@ -215,6 +239,7 @@ function animate() {
   }
 }
 
+//function that animates the chip to move vertically
 function animateDown() {
   if (gameStarted && state.cols[target / 90] != 6) {
     down = true;
@@ -239,6 +264,7 @@ function animateDown() {
   }
 }
 
+//function that gets called when the client loses
 function handleDefeat(s) {
   let oldMove = new Image();
   host
@@ -268,6 +294,7 @@ function handleDefeat(s) {
   console.log("you lost :(");
 }
 
+//function that gets called when the client wins
 function handleVictory() {
   $("#finalScreen").modal("show");
   victory.style.display = "block";
@@ -286,6 +313,7 @@ function handleVictory() {
   console.log("VICTORY!");
 }
 
+//function that gets called when the client ties with their opponent
 function handleTie(s) {
   let oldMove = new Image();
   host
@@ -314,6 +342,7 @@ function handleTie(s) {
   gameStarted = false;
 }
 
+//function that gets called when the other player gets disconnected
 function handleTeammateDisconnected() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
   drawBoard();
@@ -340,6 +369,7 @@ function handleTeammateDisconnected() {
   gameStarted = false;
 }
 
+//function that gets called when the client requests to play again
 function playAgainRequest() {
   socket.emit("playAgain", host);
 
@@ -356,6 +386,7 @@ function playAgainRequest() {
   goBackToMainScreen.style.display = "none";
 }
 
+//function that gets called when the opponent wants to play another game
 function handlePlayAgainRequested() {
   $("#finalScreen").modal("show");
   victory.style.display = "none";
@@ -371,8 +402,7 @@ function handlePlayAgainRequested() {
   goBackToMainScreen.style.display = "none";
 }
 
+//funcyion that gets called when the client accepts to play again
 function playAgainConf() {
   socket.emit("playAgainConf");
 }
-// npx live-server to run frontend
-// npx nodemon server.js to run backend

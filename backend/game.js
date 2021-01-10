@@ -4,6 +4,7 @@ module.exports = {
   didTie,
 };
 
+//function that creates the game state when the game starts
 function createGameState() {
   return {
     latestMove: [],
@@ -21,6 +22,7 @@ function createGameState() {
   };
 }
 
+//function that checks if the player won the game (based on their last move)
 function didWin(state) {
   if (checkDown(state)) {
     return true;
@@ -34,6 +36,7 @@ function didWin(state) {
   return false;
 }
 
+//function that checks if the game ended in a tie (checks if the board is full)
 function didTie(state) {
   for (let i = 0; i < state.cols.length; ++i) {
     if (state.cols[i] != 6) {
@@ -43,6 +46,7 @@ function didTie(state) {
   return true;
 }
 
+//function that checks if the player won by putting 4 chips on top of each others
 function checkDown(state) {
   if (state.cols[state.latestMove[0]] < 4) {
     return false;
@@ -55,6 +59,7 @@ function checkDown(state) {
   return true;
 }
 
+//function that checks if the player won by having 4 chips next to each others on the same row
 function checkRow(state) {
   let num = 1;
   let x = state.latestMove[0];
@@ -85,6 +90,7 @@ function checkRow(state) {
   }
 }
 
+//function that checks if the player won by having 4 in a row in a diagonal
 function checkDiagonal(state) {
   let num = 1;
   let x = state.latestMove[0];
