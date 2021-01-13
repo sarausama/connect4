@@ -68,6 +68,7 @@ let target = 3 * 90;
 let down = false;
 let state = {};
 let gameStarted = false;
+var audio = new Audio("https://www.w3schools.com/graphics/bounce.mp3");
 
 //function that gets called when the player enters a game room
 function init() {
@@ -127,7 +128,6 @@ function newGame() {
 
 //function that gets called when a player tries to join a room
 function joinGame() {
-  console.log(typeof gameCodeInput.value);
   const code = gameCodeInput.value.toUpperCase();
   nameInput.value
     ? socket.emit("joinGame", code, nameInput.value)
@@ -195,7 +195,7 @@ function handleSecondPlayerJoined(opponent) {
 function handlePlayerTurn(hostPlayer, s) {
   current = hostPlayer;
   down = false;
-  if (s.latestMove) {
+  if (s.latestMove.length !== 0) {
     let oldMove = new Image();
     host
       ? (oldMove.src = "./pics/yellowChip.png")
@@ -207,6 +207,7 @@ function handlePlayerTurn(hostPlayer, s) {
       70,
       70
     );
+    audio.play();
   }
   if (host) {
     player1.classList.add("turn");
@@ -251,7 +252,6 @@ function animateDown() {
       70,
       70
     );
-    var audio = new Audio("https://www.w3schools.com/graphics/bounce.mp3");
     audio.play();
     socket.emit("played", [target / 90, state.cols[target / 90]]);
     if (host) {
