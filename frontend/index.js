@@ -83,8 +83,6 @@ function init() {
   drawBoard();
   canvas.addEventListener("mousemove", mouseMove);
   canvas.addEventListener("mousedown", mouseDown);
-  canvas.addEventListener("touchmove", mouseMove);
-  canvas.addEventListener("touchend", mouseDown);
 }
 
 //function that draws the board
