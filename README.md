@@ -4,4 +4,4 @@
 
 ## The frontend is built with html, CSS, JS and Bootstrap
 
-[Available at](https://reverent-dijkstra-1a100f.netlify.app/)
+[Try it out](https://reverent-dijkstra-1a100f.netlify.app/)
